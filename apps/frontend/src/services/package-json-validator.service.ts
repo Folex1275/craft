@@ -6,6 +6,39 @@
  * failure found. No external semver library is used — validation is regex-based.
  *
  * Feature: package-json-validation
+ *
+ * Validation Rules Reference
+ * ──────────────────────────────────────────────────────────────────────────
+ *
+ * | Rule | Field | Condition | Error Message |
+ * |------|-------|-----------|---------------|
+ * | Required Fields | name, version, scripts, dependencies | Must be present and non-null | "Required field {field} is missing" |
+ * | Package Name Format | name | Must match npm naming rules (lowercase, no spaces, no uppercase) | "Package name does not conform to npm naming rules" |
+ * | Semver Version | version | Must be MAJOR.MINOR.PATCH format (e.g., 1.0.0) | "Version is not a valid semver string (expected MAJOR.MINOR.PATCH)" |
+ * | Required Scripts | scripts.dev, scripts.build, scripts.start, scripts.lint | All four scripts must be present | "Required script {script} is missing" |
+ * | Private Flag | private | Must be exactly true (boolean) | "The private field must be set to true to prevent accidental npm publishes" |
+ * | Dependency Versions | dependencies.*, devDependencies.* | Must be valid semver ranges (^, ~, >=, >, <=, <, or exact) | "Version for {pkg} is not a valid semver range" |
+ * | No Duplicate Deps | dependencies, devDependencies | Package cannot appear in both groups | "{pkg} is declared in both dependencies and devDependencies" |
+ *
+ * Actionable Error Messages
+ * ──────────────────────────────────────────────────────────────────────────
+ *
+ * All error messages are designed to be actionable and tell the user how to fix the issue:
+ *
+ * - Invalid semver: "Version 'latest' is not a valid semver string (expected MAJOR.MINOR.PATCH)"
+ *   → Action: Use format like "1.0.0"
+ *
+ * - Invalid name: "Package name 'MyApp' does not conform to npm naming rules"
+ *   → Action: Use lowercase, no spaces, no uppercase letters
+ *
+ * - Missing field: "Required field 'name' is missing"
+ *   → Action: Add the field to package.json
+ *
+ * - Duplicate dependency: "'react' is declared in both dependencies and devDependencies"
+ *   → Action: Remove from one of the dependency groups
+ *
+ * - Invalid private: "The 'private' field must be set to true to prevent accidental npm publishes"
+ *   → Action: Set private: true in package.json
  */
 
 import type { GeneratedFile } from '@craft/types';
