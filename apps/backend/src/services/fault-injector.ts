@@ -17,7 +17,10 @@ export type FaultType =
     | 'invalid_json_key'     // Remove quotes from the first JSON key
     | 'truncated_json'       // Truncate JSON content to 50% of its length
     | 'duplicate_export'     // Append a duplicate `export const config = {};`
-    | 'missing_semicolon_ts'; // Remove trailing semicolons from import statements
+    | 'missing_semicolon_ts' // Remove trailing semicolons from import statements
+    | 'vercel_timeout'       // Simulate network timeout
+    | 'vercel_rate_limit'    // Simulate 429 rate limit
+    | 'vercel_server_error'; // Simulate 500 server error
 
 export class FaultInjector {
     /**
@@ -56,6 +59,21 @@ export class FaultInjector {
             }
             case 'missing_semicolon_ts': {
                 content = content.replace(/^(import .+);$/gm, '$1');
+                break;
+            }
+            case 'vercel_timeout': {
+                // Mark content as timing out (used for API simulation)
+                content = '__VERCEL_TIMEOUT__';
+                break;
+            }
+            case 'vercel_rate_limit': {
+                // Mark content as rate limited (used for API simulation)
+                content = '__VERCEL_RATE_LIMIT__';
+                break;
+            }
+            case 'vercel_server_error': {
+                // Mark content as server error (used for API simulation)
+                content = '__VERCEL_SERVER_ERROR__';
                 break;
             }
         }
